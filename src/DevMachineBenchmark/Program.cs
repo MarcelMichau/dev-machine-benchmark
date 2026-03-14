@@ -105,7 +105,8 @@ if (preflightOnly)
 var hasNode = PreflightValidator.HasTool(toolChecks, "node");
 var hasNpm = PreflightValidator.HasTool(toolChecks, "npm");
 var hasPnpm = PreflightValidator.HasTool(toolChecks, "pnpm");
-var hasDocker = PreflightValidator.HasTool(toolChecks, "docker");
+var containerRuntime = PreflightValidator.GetContainerRuntime(toolChecks);
+var hasDocker = containerRuntime is not null;
 var runDockerPulls = hasDocker && !skipDocker;
 
 // Collect system info
@@ -149,7 +150,7 @@ var suites = new List<BenchmarkSuite>();
     else
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("  Skipping integration/acceptance tests for fake-survey-generator (Docker required)");
+        Console.WriteLine("  Skipping integration/acceptance tests for fake-survey-generator (Docker or Podman required)");
         Console.ResetColor();
     }
 
@@ -193,7 +194,7 @@ var suites = new List<BenchmarkSuite>();
     else
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("  Skipping Aspire tests for dotnet-starter-project-template (Docker required)");
+        Console.WriteLine("  Skipping Aspire tests for dotnet-starter-project-template (Docker or Podman required)");
         Console.ResetColor();
     }
 
@@ -227,7 +228,7 @@ else
     Console.ResetColor();
 }
 
-// Suite 4: Docker image pulls
+// Suite 4: Container image pulls (docker or podman)
 if (runDockerPulls)
 {
     var images = new[]
@@ -239,19 +240,19 @@ if (runDockerPulls)
         "redis:7-alpine",
     };
 
-    var tasks = images.Select(img => (IBenchmarkTask)new DockerPullTask(img)).ToList();
-    suites.Add(new BenchmarkSuite("Docker Image Pulls", null, tasks));
+    var tasks = images.Select(img => (IBenchmarkTask)new DockerPullTask(img, containerRuntime!)).ToList();
+    suites.Add(new BenchmarkSuite("Container Image Pulls", null, tasks));
 }
 else if (!hasDocker)
 {
     Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.WriteLine("  Skipping Docker image pull suite (Docker not found)");
+    Console.WriteLine("  Skipping container image pull suite (neither Docker nor Podman found)");
     Console.ResetColor();
 }
 else
 {
     Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.WriteLine("  Skipping Docker image pull suite (--skip-docker)");
+    Console.WriteLine("  Skipping container image pull suite (--skip-docker)");
     Console.ResetColor();
 }
 

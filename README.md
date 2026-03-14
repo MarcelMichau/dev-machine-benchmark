@@ -1,6 +1,6 @@
 # Dev Machine Benchmark
 
-A .NET 10 benchmark harness that measures real-world developer workflow performance — git clone, dotnet restore/build/test, npm/pnpm toolchains, Playwright E2E, and Docker pulls — across multiple open-source repositories.
+A .NET 10 benchmark harness that measures real-world developer workflow performance — git clone, dotnet restore/build/test, npm/pnpm toolchains, Playwright E2E, and container image pulls — across multiple open-source repositories.
 
 Designed to capture end-to-end dev machine performance including the overhead of DLP/endpoint protection, not synthetic micro-benchmarks.
 
@@ -13,7 +13,7 @@ Four benchmark suites run sequentially, modeling real developer workflows (clone
 | **fake-survey-generator** | .NET + Node.js | Clone, restore, build, unit/integration/acceptance tests, npm ci/build/test, git commit |
 | **dotnet-starter-project-template** | .NET Aspire | Clone, restore, build, Aspire tests, git commit |
 | **home-page** | Node.js/pnpm/Playwright | Clone, pnpm install/build, Playwright install/tests, git commit |
-| **Docker Image Pulls** | Docker | Pull 5 standard images (dotnet/sdk, dotnet/aspnet, node, postgres, redis) |
+| **Container Image Pulls** | Docker / Podman | Pull 5 standard images (dotnet/sdk, dotnet/aspnet, node, postgres, redis) |
 
 Each task is tagged by type — **NET** (network), **CPU**, **I/O**, or **MIX** — so you can distinguish network-dependent results from local performance.
 
@@ -24,7 +24,7 @@ Each task is tagged by type — **NET** (network), **CPU**, **I/O**, or **MIX** 
 **Optional (suites skip gracefully if missing):**
 - [Node.js](https://nodejs.org/) + npm — for npm-based tasks
 - [pnpm](https://pnpm.io/) — for the home-page suite
-- [Docker](https://www.docker.com/) — for integration/acceptance tests and Docker pull benchmarks
+- [Docker](https://www.docker.com/) or [Podman](https://podman.io/) — for integration/acceptance tests and container image pull benchmarks (Docker takes precedence if both are installed)
 
 ## Quick Start
 
@@ -40,7 +40,7 @@ Results are saved to `./results/` as both JSON and Markdown.
 --iterations N           Measured iterations per task (default: 5)
 --warmup N               Warm-up iterations to discard (default: 1)
 --preflight-only         Run preflight checks and exit
---skip-docker            Skip Docker pull benchmarks
+--skip-docker            Skip container image pull benchmarks
 --shuffle-suites         Randomize suite execution order
 --output-dir PATH        Results directory (default: ./results)
 --compare A.json B.json  Compare two result files side-by-side

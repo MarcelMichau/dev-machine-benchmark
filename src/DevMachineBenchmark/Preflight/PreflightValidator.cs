@@ -14,6 +14,7 @@ public static class PreflightValidator
             ("npm", "npm", "--version", false),
             ("pnpm", "pnpm", "--version", false),
             ("docker", "docker", "--version", false),
+            ("podman", "podman", "--version", false),
         };
 
         var results = new List<ToolCheckResult>();
@@ -87,4 +88,15 @@ public static class PreflightValidator
 
     public static bool HasTool(List<ToolCheckResult> results, string name) =>
         results.Any(r => r.ToolName == name && r.IsInstalled);
+
+    /// <summary>
+    /// Returns "docker" if Docker is installed, "podman" if only Podman is installed, or null if neither is available.
+    /// Docker takes precedence when both are installed.
+    /// </summary>
+    public static string? GetContainerRuntime(List<ToolCheckResult> results)
+    {
+        if (HasTool(results, "docker")) return "docker";
+        if (HasTool(results, "podman")) return "podman";
+        return null;
+    }
 }
