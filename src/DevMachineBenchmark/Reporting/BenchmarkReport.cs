@@ -8,4 +8,5 @@ public sealed record BenchmarkReport(
     DateTime Timestamp,
     int Iterations,
     List<SuiteResult> Suites,
-    string? Note = null);
+    string? Note = null,
+    int WarmupIterations = 1);

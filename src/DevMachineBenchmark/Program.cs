@@ -4,8 +4,11 @@ using DevMachineBenchmark.Preflight;
 using DevMachineBenchmark.Reporting;
 using DevMachineBenchmark.SystemInfo;
 
-var iterations = 3;
+var iterations = 5;
+var warmupIterations = 1;
 var skipDocker = false;
+var shuffleSuites = false;
+var preflightOnly = false;
 var outputDir = Path.Combine(Directory.GetCurrentDirectory(), "results");
 string? compareFileA = null;
 string? compareFileB = null;
@@ -19,8 +22,17 @@ for (var i = 0; i < args.Length; i++)
         case "--iterations" when i + 1 < args.Length:
             iterations = int.Parse(args[++i]);
             break;
+        case "--warmup" when i + 1 < args.Length:
+            warmupIterations = int.Parse(args[++i]);
+            break;
         case "--skip-docker":
             skipDocker = true;
+            break;
+        case "--preflight-only":
+            preflightOnly = true;
+            break;
+        case "--shuffle-suites":
+            shuffleSuites = true;
             break;
         case "--output-dir" when i + 1 < args.Length:
             outputDir = args[++i];
@@ -70,7 +82,9 @@ Console.WriteLine("╔═══════════════════�
 Console.WriteLine("║              Dev Machine Benchmark Harness                      ║");
 Console.WriteLine("╚══════════════════════════════════════════════════════════════════╝");
 Console.ResetColor();
-Console.WriteLine($"  Iterations: {iterations} (+ 1 warm-up)");
+Console.WriteLine($"  Iterations: {iterations} (+ {warmupIterations} warm-up)");
+if (shuffleSuites)
+    Console.WriteLine("  Suite order: randomized");
 Console.WriteLine();
 
 // Preflight checks
@@ -85,6 +99,9 @@ if (!PreflightValidator.HasRequiredTools(toolChecks))
     return;
 }
 
+if (preflightOnly)
+    return;
+
 var hasNode = PreflightValidator.HasTool(toolChecks, "node");
 var hasNpm = PreflightValidator.HasTool(toolChecks, "npm");
 var hasPnpm = PreflightValidator.HasTool(toolChecks, "pnpm");
@@ -94,6 +111,13 @@ var runDockerPulls = hasDocker && !skipDocker;
 // Collect system info
 Console.WriteLine("Collecting system information...");
 var machineInfo = await SystemInfoCollector.CollectAsync();
+
+if (machineInfo.CpuUsagePercent is > 50)
+{
+    Console.ForegroundColor = ConsoleColor.Yellow;
+    Console.WriteLine($"  Warning: CPU usage is {machineInfo.CpuUsagePercent:F1}% — results may be affected by background activity.");
+    Console.ResetColor();
+}
 
 // Build suites
 var suites = new List<BenchmarkSuite>();
@@ -231,8 +255,24 @@ else
     Console.ResetColor();
 }
 
+// Shuffle suite order if requested to eliminate ordering bias
+if (shuffleSuites)
+{
+    var rng = Random.Shared;
+    for (var i = suites.Count - 1; i > 0; i--)
+    {
+        var j = rng.Next(i + 1);
+        (suites[i], suites[j]) = (suites[j], suites[i]);
+    }
+
+    Console.WriteLine("  Suite execution order:");
+    for (var i = 0; i < suites.Count; i++)
+        Console.WriteLine($"    {i + 1}. {suites[i].Name}");
+    Console.WriteLine();
+}
+
 // Run benchmarks
-var runner = new BenchmarkRunner(iterations);
+var runner = new BenchmarkRunner(iterations, warmupIterations, shuffleSuites);
 var suiteResults = new List<SuiteResult>();
 
 using var cts = new CancellationTokenSource();
@@ -265,7 +305,8 @@ var report = new BenchmarkReport(
     DateTime.UtcNow,
     iterations,
     suiteResults,
-    "Clone and Docker pull times are network-dependent. Git commit times are heavily impacted by DLP/endpoint protection.");
+    "Clone and Docker pull times are network-dependent. Git commit times are heavily impacted by DLP/endpoint protection.",
+    warmupIterations);
 
 // Output results
 ConsoleReportWriter.Write(report);
@@ -281,8 +322,11 @@ static void PrintUsage()
         Usage: DevMachineBenchmark [options]
 
         Options:
-          --iterations N           Measured iterations per task (default: 3)
+          --iterations N           Measured iterations per task (default: 5)
+          --warmup N               Warm-up iterations to discard (default: 1)
+          --preflight-only         Run preflight checks and exit
           --skip-docker            Skip Docker pull benchmarks
+          --shuffle-suites         Randomize suite execution order
           --output-dir PATH        Results directory (default: ./results)
           --compare A.json B.json  Compare two result files
           --from-json FILE         Re-render markdown from an existing JSON result

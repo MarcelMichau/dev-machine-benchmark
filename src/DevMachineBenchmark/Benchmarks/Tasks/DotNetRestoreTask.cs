@@ -3,6 +3,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 public sealed class DotNetRestoreTask(string solution) : IBenchmarkTask
 {
     public string Name => $"dotnet restore {solution.Replace('\\', '/')}";
+    public TaskCategory Category => TaskCategory.Network;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)
     {

@@ -3,7 +3,7 @@ using DevMachineBenchmark.Statistics;
 
 namespace DevMachineBenchmark.Benchmarks;
 
-public sealed class BenchmarkRunner(int iterations)
+public sealed class BenchmarkRunner(int iterations, int warmupIterations = 1, bool shuffleSuites = false)
 {
     public async Task<SuiteResult> RunSuiteAsync(BenchmarkSuite suite, CancellationToken ct)
     {
@@ -17,43 +17,45 @@ public sealed class BenchmarkRunner(int iterations)
         foreach (var task in suite.Tasks)
         {
             Console.WriteLine();
-            Console.WriteLine($"  Task: {task.Name}");
+            Console.WriteLine($"  Task: {task.Name} [{task.Category}]");
 
             var durations = new List<double>();
             var success = true;
 
-            // Warm-up run (discarded)
-            Console.Write("    [warm-up] ");
-            var tempDir = CreateTempDirectory();
-            try
+            // Warm-up runs (discarded)
+            for (var w = 1; w <= warmupIterations; w++)
             {
-                var warmup = await task.ExecuteAsync(tempDir, ct);
-                Console.WriteLine(warmup.Success
-                    ? $"{warmup.Elapsed.TotalMilliseconds:F0}ms (discarded)"
-                    : $"FAILED: {warmup.ErrorMessage}");
-
-                if (!warmup.Success)
+                Console.Write($"    [warm-up {w}/{warmupIterations}] ");
+                var tempDir = CreateTempDirectory();
+                try
                 {
-                    success = false;
-                    results.Add(new BenchmarkResult(task.Name, [], null, false));
-                    continue;
+                    var warmup = await task.ExecuteAsync(tempDir, ct);
+                    Console.WriteLine(warmup.Success
+                        ? $"{warmup.Elapsed.TotalMilliseconds:F0}ms (discarded)"
+                        : $"FAILED: {warmup.ErrorMessage}");
+
+                    if (!warmup.Success)
+                    {
+                        success = false;
+                        results.Add(new BenchmarkResult(task.Name, [], null, false, task.Category));
+                        break;
+                    }
+                }
+                finally
+                {
+                    await CleanupDirectoryAsync(tempDir);
                 }
             }
-            finally
-            {
-                await CleanupDirectoryAsync(tempDir);
-            }
+
+            if (!success) continue;
 
             // Measured iterations
             for (var i = 1; i <= iterations; i++)
             {
                 Console.Write($"    [iteration {i}/{iterations}] ");
-                tempDir = CreateTempDirectory();
+                var tempDir = CreateTempDirectory();
                 try
                 {
-                    // For tasks that need prior state (build before test, etc.),
-                    // they operate on the working directory passed in by the suite orchestrator.
-                    // For standalone tasks, each gets a fresh temp dir.
                     var result = await task.ExecuteAsync(tempDir, ct);
 
                     if (result.Success)
@@ -74,19 +76,8 @@ public sealed class BenchmarkRunner(int iterations)
                 }
             }
 
-            TaskStats? stats = null;
-            if (durations.Count > 0)
-            {
-                var arr = durations.ToArray();
-                stats = new TaskStats(
-                    StatsCalculator.Mean(arr),
-                    StatsCalculator.Median(arr),
-                    StatsCalculator.StdDev(arr),
-                    StatsCalculator.Min(arr),
-                    StatsCalculator.Max(arr));
-            }
-
-            results.Add(new BenchmarkResult(task.Name, durations, stats, success));
+            var stats = ComputeStats(durations);
+            results.Add(new BenchmarkResult(task.Name, durations, stats, success, task.Category));
         }
 
         return new SuiteResult(suite.Name, results);
@@ -106,47 +97,52 @@ public sealed class BenchmarkRunner(int iterations)
         // We need to track per-task durations across iterations
         var taskDurations = new Dictionary<string, List<double>>();
         var taskSuccess = new Dictionary<string, bool>();
+        var taskCategories = new Dictionary<string, TaskCategory>();
         foreach (var task in suite.Tasks)
         {
             taskDurations[task.Name] = [];
             taskSuccess[task.Name] = true;
+            taskCategories[task.Name] = task.Category;
         }
 
-        // Warm-up run
-        Console.WriteLine();
-        Console.WriteLine("  [warm-up iteration]");
-        var warmupDir = CreateTempDirectory();
-        try
+        // Warm-up runs
+        for (var w = 1; w <= warmupIterations; w++)
         {
-            foreach (var task in suite.Tasks)
+            Console.WriteLine();
+            Console.WriteLine($"  [warm-up iteration {w}/{warmupIterations}]");
+            var warmupDir = CreateTempDirectory();
+            try
             {
-                Console.Write($"    {task.Name}: ");
-                TaskResult result;
-                try
+                foreach (var task in suite.Tasks)
                 {
-                    result = await task.ExecuteAsync(warmupDir, ct);
-                }
-                catch (Exception ex)
-                {
-                    result = new TaskResult(TimeSpan.Zero, false, ex.Message);
-                }
+                    Console.Write($"    {task.Name}: ");
+                    TaskResult result;
+                    try
+                    {
+                        result = await task.ExecuteAsync(warmupDir, ct);
+                    }
+                    catch (Exception ex)
+                    {
+                        result = new TaskResult(TimeSpan.Zero, false, ex.Message);
+                    }
 
-                Console.WriteLine(result.Success
-                    ? $"{result.Elapsed.TotalMilliseconds:F0}ms (discarded)"
-                    : $"FAILED: {result.ErrorMessage}");
+                    Console.WriteLine(result.Success
+                        ? $"{result.Elapsed.TotalMilliseconds:F0}ms (discarded)"
+                        : $"FAILED: {result.ErrorMessage}");
 
-                if (!result.Success)
-                {
-                    taskSuccess[task.Name] = false;
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"    WARNING: {task.Name} failed during warm-up, will skip in measured runs");
-                    Console.ResetColor();
+                    if (!result.Success)
+                    {
+                        taskSuccess[task.Name] = false;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"    WARNING: {task.Name} failed during warm-up, will skip in measured runs");
+                        Console.ResetColor();
+                    }
                 }
             }
-        }
-        finally
-        {
-            await CleanupDirectoryAsync(warmupDir);
+            finally
+            {
+                await CleanupDirectoryAsync(warmupDir);
+            }
         }
 
         // Measured iterations
@@ -199,22 +195,40 @@ public sealed class BenchmarkRunner(int iterations)
         foreach (var task in suite.Tasks)
         {
             var durations = taskDurations[task.Name];
-            TaskStats? stats = null;
-            if (durations.Count > 0)
-            {
-                var arr = durations.ToArray();
-                stats = new TaskStats(
-                    StatsCalculator.Mean(arr),
-                    StatsCalculator.Median(arr),
-                    StatsCalculator.StdDev(arr),
-                    StatsCalculator.Min(arr),
-                    StatsCalculator.Max(arr));
-            }
-
-            results.Add(new BenchmarkResult(task.Name, durations, stats, taskSuccess[task.Name]));
+            var stats = ComputeStats(durations);
+            results.Add(new BenchmarkResult(task.Name, durations, stats, taskSuccess[task.Name], taskCategories[task.Name]));
         }
 
         return new SuiteResult(suite.Name, results);
+    }
+
+    public bool ShuffleSuites => shuffleSuites;
+
+    private static TaskStats? ComputeStats(List<double> durations)
+    {
+        if (durations.Count == 0) return null;
+
+        var arr = durations.ToArray();
+        var cv = StatsCalculator.CoefficientOfVariation(arr);
+        var ci = StatsCalculator.ConfidenceInterval95(arr);
+        var iqr = arr.Length >= 4 ? StatsCalculator.IQR(arr) : (double?)null;
+        var trimmedMean = arr.Length >= 5 ? StatsCalculator.TrimmedMean(arr) : (double?)null;
+        var hasOutliers = StatsCalculator.HasOutliers(arr);
+        var outlierCount = StatsCalculator.OutlierCount(arr);
+
+        return new TaskStats(
+            StatsCalculator.Mean(arr),
+            StatsCalculator.Median(arr),
+            StatsCalculator.StdDev(arr),
+            StatsCalculator.Min(arr),
+            StatsCalculator.Max(arr),
+            cv,
+            ci?.Low,
+            ci?.High,
+            iqr,
+            trimmedMean,
+            hasOutliers,
+            outlierCount);
     }
 
     private static string CreateTempDirectory()

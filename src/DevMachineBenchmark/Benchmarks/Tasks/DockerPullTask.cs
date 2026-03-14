@@ -3,6 +3,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 public sealed class DockerPullTask(string image) : IBenchmarkTask
 {
     public string Name => $"docker pull {image}";
+    public TaskCategory Category => TaskCategory.Network;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)
     {

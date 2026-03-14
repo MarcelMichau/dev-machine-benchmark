@@ -3,6 +3,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 public sealed class GitCommitTask(string? repoSubDir = null) : IBenchmarkTask
 {
     public string Name => "git add + commit";
+    public TaskCategory Category => TaskCategory.IO;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)
     {

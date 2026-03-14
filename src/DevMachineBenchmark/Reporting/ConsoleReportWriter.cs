@@ -22,8 +22,13 @@ public static class ConsoleReportWriter
         Console.WriteLine($"  .NET SDK:   {report.MachineInfo.DotnetSdk}");
         Console.WriteLine($"  Node:       {report.MachineInfo.NodeVersion ?? "N/A"}");
         Console.WriteLine($"  Docker:     {report.MachineInfo.DockerVersion ?? "N/A"}");
-        Console.WriteLine($"  Iterations: {report.Iterations}");
+        Console.WriteLine($"  Iterations: {report.Iterations} (+ {report.WarmupIterations} warm-up)");
         Console.WriteLine($"  Timestamp:  {report.Timestamp:yyyy-MM-dd HH:mm:ss}");
+
+        if (report.MachineInfo.CpuUsagePercent is not null)
+            Console.WriteLine($"  CPU Load:   {report.MachineInfo.CpuUsagePercent:F1}% at start");
+        if (report.MachineInfo.MemoryUsagePercent is not null)
+            Console.WriteLine($"  Memory:     {report.MachineInfo.MemoryUsagePercent:F1}% used at start");
 
         foreach (var suite in report.Suites)
         {
@@ -33,16 +38,16 @@ public static class ConsoleReportWriter
             Console.ResetColor();
             Console.WriteLine();
 
-            Console.WriteLine(string.Format("  {0,-50} {1,10} {2,10} {3,10} {4,10}",
-                "Task", "Median", "StdDev", "Min", "Max"));
-            Console.WriteLine("  " + new string('-', 92));
+            Console.WriteLine(string.Format("  {0,-50} {1,6} {2,10} {3,10} {4,10} {5,10} {6,7}",
+                "Task", "Type", "Median", "StdDev", "Min", "Max", "CV%"));
+            Console.WriteLine("  " + new string('-', 106));
 
             foreach (var result in suite.Results)
             {
                 if (!result.Success)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(string.Format("  {0,-50} {1,10}", result.TaskName, "FAILED"));
+                    Console.WriteLine(string.Format("  {0,-50} {1,6} {2,10}", result.TaskName, CategoryTag(result.Category), "FAILED"));
                     Console.ResetColor();
                     continue;
                 }
@@ -50,18 +55,43 @@ public static class ConsoleReportWriter
                 if (result.Stats is null)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine(string.Format("  {0,-50} {1,10}", result.TaskName, "SKIPPED"));
+                    Console.WriteLine(string.Format("  {0,-50} {1,6} {2,10}", result.TaskName, CategoryTag(result.Category), "SKIPPED"));
                     Console.ResetColor();
                     continue;
                 }
 
                 var s = result.Stats;
-                Console.WriteLine(string.Format("  {0,-50} {1,10} {2,10} {3,10} {4,10}",
+                var stddev = result.DurationsMs.Count > 1 ? FormatMs(s.StdDevMs) : "N/A";
+                var cv = s.CvPercent is not null ? $"{s.CvPercent:F1}%" : "N/A";
+
+                // Flag outliers
+                var outlierFlag = s.HasOutliers ? " (!)" : "";
+
+                // Color high CV yellow
+                if (s.CvPercent is > 30)
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+
+                Console.WriteLine(string.Format("  {0,-50} {1,6} {2,10} {3,10} {4,10} {5,10} {6,7}{7}",
                     result.TaskName,
+                    CategoryTag(result.Category),
                     FormatMs(s.MedianMs),
-                    FormatMs(s.StdDevMs),
+                    stddev,
                     FormatMs(s.MinMs),
-                    FormatMs(s.MaxMs)));
+                    FormatMs(s.MaxMs),
+                    cv,
+                    outlierFlag));
+
+                Console.ResetColor();
+
+                // Show confidence interval when available
+                if (s.CiLowMs is not null && s.CiHighMs is not null)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine($"    95% CI: [{FormatMs(s.CiLowMs.Value)}, {FormatMs(s.CiHighMs.Value)}]" +
+                        (s.TrimmedMeanMs is not null ? $"  Trimmed Mean: {FormatMs(s.TrimmedMeanMs.Value)}" : "") +
+                        (s.IqrMs is not null ? $"  IQR: {FormatMs(s.IqrMs.Value)}" : ""));
+                    Console.ResetColor();
+                }
             }
         }
 
@@ -73,8 +103,27 @@ public static class ConsoleReportWriter
             Console.ResetColor();
         }
 
+        // Warn if iteration count is low
+        if (report.Iterations < 5)
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"  Warning: Only {report.Iterations} iteration(s) measured. Consider --iterations 5 or higher for reliable statistics.");
+            Console.ResetColor();
+        }
+
         Console.WriteLine();
     }
+
+    private static string CategoryTag(TaskCategory? category) =>
+        category switch
+        {
+            TaskCategory.Network => "NET",
+            TaskCategory.Cpu => "CPU",
+            TaskCategory.IO => "I/O",
+            TaskCategory.Mixed => "MIX",
+            _ => "—",
+        };
 
     private static string FormatMs(double ms) =>
         ms >= 1000 ? $"{ms / 1000:F1}s" : $"{ms:F0}ms";

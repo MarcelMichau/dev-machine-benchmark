@@ -9,4 +9,6 @@ public sealed record MachineInfo(
     string DiskType,
     string DotnetSdk,
     string? NodeVersion,
-    string? DockerVersion);
+    string? DockerVersion,
+    double? CpuUsagePercent = null,
+    double? MemoryUsagePercent = null);

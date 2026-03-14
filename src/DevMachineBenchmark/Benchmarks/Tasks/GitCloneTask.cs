@@ -3,6 +3,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 public sealed class GitCloneTask(string repoUrl, string targetDir, bool shallow = true) : IBenchmarkTask
 {
     public string Name => "git clone";
+    public TaskCategory Category => TaskCategory.Network;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)
     {

@@ -3,6 +3,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 public sealed class DotNetBuildTask(string solution) : IBenchmarkTask
 {
     public string Name => $"dotnet build {solution.Replace('\\', '/')}";
+    public TaskCategory Category => TaskCategory.Cpu;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)
     {

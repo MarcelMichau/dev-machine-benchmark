@@ -3,6 +3,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 public sealed class DotNetTestTask(string projectPath, string label = "unit") : IBenchmarkTask
 {
     public string Name => $"dotnet test ({label}): {Path.GetFileName(projectPath.TrimEnd('/', '\\'))}";
+    public TaskCategory Category => TaskCategory.Mixed;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)
     {

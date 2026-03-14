@@ -18,10 +18,13 @@ public static class SystemInfoCollector
         var dotnetSdk = await GetToolVersionAsync("dotnet", "--version") ?? "unknown";
         var nodeVersion = await GetToolVersionAsync("node", "--version");
         var dockerVersion = await GetDockerVersionAsync();
+        var cpuUsage = await GetCpuUsageAsync();
+        var memoryUsage = await GetMemoryUsagePercentAsync();
 
         return new MachineInfo(
             hostname, os, cpuModel, cpuCores, ramGB,
-            diskType, dotnetSdk, nodeVersion, dockerVersion);
+            diskType, dotnetSdk, nodeVersion, dockerVersion,
+            cpuUsage, memoryUsage);
     }
 
     private static async Task<string> GetCpuModelAsync()
@@ -106,5 +109,71 @@ public static class SystemInfoCollector
         var version = await GetToolVersionAsync("docker", "--version");
         if (version is not null) return version;
         return await GetToolVersionAsync("podman", "--version");
+    }
+
+    private static async Task<double?> GetCpuUsageAsync()
+    {
+        try
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var result = await ProcessRunner.RunAsync(
+                    "powershell",
+                    "-NoProfile -Command \"(Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average\"",
+                    ".");
+                if (result.ExitCode == 0 && double.TryParse(result.StandardOutput.Trim(), out var cpu))
+                    return Math.Round(cpu, 1);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                var result = await ProcessRunner.RunAsync(
+                    "bash", "-c \"top -l 1 | grep 'CPU usage' | awk '{print $3}' | tr -d '%'\"", ".");
+                if (result.ExitCode == 0 && double.TryParse(result.StandardOutput.Trim(), out var cpu))
+                    return Math.Round(cpu, 1);
+            }
+            else
+            {
+                var result = await ProcessRunner.RunAsync(
+                    "bash", "-c \"grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'\"", ".");
+                if (result.ExitCode == 0 && double.TryParse(result.StandardOutput.Trim(), out var cpu))
+                    return Math.Round(cpu, 1);
+            }
+        }
+        catch { }
+
+        return null;
+    }
+
+    private static async Task<double?> GetMemoryUsagePercentAsync()
+    {
+        try
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var result = await ProcessRunner.RunAsync(
+                    "powershell",
+                    "-NoProfile -Command \"$os = Get-CimInstance Win32_OperatingSystem; [math]::Round(($os.TotalVisibleMemorySize - $os.FreePhysicalMemory) / $os.TotalVisibleMemorySize * 100, 1)\"",
+                    ".");
+                if (result.ExitCode == 0 && double.TryParse(result.StandardOutput.Trim(), out var mem))
+                    return mem;
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                var result = await ProcessRunner.RunAsync(
+                    "bash", "-c \"vm_stat | awk '/Pages active/ {active=$3} /Pages wired/ {wired=$4} /Pages free/ {free=$3} END {total=active+wired+free; print (active+wired)/total*100}'\"", ".");
+                if (result.ExitCode == 0 && double.TryParse(result.StandardOutput.Trim(), out var mem))
+                    return Math.Round(mem, 1);
+            }
+            else
+            {
+                var result = await ProcessRunner.RunAsync(
+                    "bash", "-c \"free | awk '/Mem:/ {print $3/$2 * 100}'\"", ".");
+                if (result.ExitCode == 0 && double.TryParse(result.StandardOutput.Trim(), out var mem))
+                    return Math.Round(mem, 1);
+            }
+        }
+        catch { }
+
+        return null;
     }
 }

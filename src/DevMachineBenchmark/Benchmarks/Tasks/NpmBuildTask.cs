@@ -3,6 +3,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 public sealed class NpmBuildTask(string subDirectory) : IBenchmarkTask
 {
     public string Name => $"npm run build ({subDirectory})";
+    public TaskCategory Category => TaskCategory.Cpu;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)
     {
