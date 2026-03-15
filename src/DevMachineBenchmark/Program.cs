@@ -135,6 +135,7 @@ var suites = new List<BenchmarkSuite>();
         new GitCloneTask(repoUrl, repoDir, shallow: false),
         new DotNetRestoreTask(Path.Combine(repoDir, solution)),
         new DotNetBuildTask(Path.Combine(repoDir, solution)),
+        new DotNetCleanAndBuildTask(Path.Combine(repoDir, solution)),
         new DotNetTestTask(Path.Combine(repoDir, "src/server/FakeSurveyGenerator.Application.Tests"), "unit"),
     };
 
@@ -183,6 +184,7 @@ var suites = new List<BenchmarkSuite>();
         new GitCloneTask(repoUrl, repoDir),
         new DotNetRestoreTask(Path.Combine(repoDir, solution)),
         new DotNetBuildTask(Path.Combine(repoDir, solution)),
+        new DotNetCleanAndBuildTask(Path.Combine(repoDir, solution)),
     };
 
     if (hasDocker)
