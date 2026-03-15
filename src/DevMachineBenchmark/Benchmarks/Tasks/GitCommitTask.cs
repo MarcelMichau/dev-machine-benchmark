@@ -2,7 +2,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 
 public sealed class GitCommitTask(string? repoSubDir = null) : IBenchmarkTask
 {
-    public string Name => "git add + commit";
+    public string Name => "git add + commit (with changes)";
     public TaskCategory Category => TaskCategory.IO;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)
@@ -14,6 +14,10 @@ public sealed class GitCommitTask(string? repoSubDir = null) : IBenchmarkTask
         // Configure git identity for the commit
         await ProcessRunner.RunAsync("git", "config user.email benchmark@test.local", repoDir, ct);
         await ProcessRunner.RunAsync("git", "config user.name Benchmark", repoDir, ct);
+
+        // Write a scratch file so git add always stages a real change
+        var scratchPath = Path.Combine(repoDir, "benchmark-scratch.txt");
+        await File.WriteAllTextAsync(scratchPath, DateTime.UtcNow.Ticks.ToString(), ct);
 
         // Fixed dates for reproducibility
         var env = new Dictionary<string, string>
@@ -29,9 +33,8 @@ public sealed class GitCommitTask(string? repoSubDir = null) : IBenchmarkTask
 
         // Commit with --no-verify to skip hooks and -c commit.gpgsign=false to
         // bypass GPG/1Password signing (measure raw git perf, not signing overhead)
-        // --allow-empty in case nothing changed
         var commitResult = await ProcessRunner.RunAsync(
-            "git", "-c commit.gpgsign=false commit --no-verify --allow-empty -m benchmark",
+            "git", "-c commit.gpgsign=false commit --no-verify -m benchmark",
             repoDir, ct, env);
 
         var totalElapsed = addResult.Elapsed + commitResult.Elapsed;

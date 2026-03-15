@@ -23,13 +23,15 @@ public static class ComparisonReporter
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("╔══════════════════════════════════════════════════════════════════════════════════╗");
-        Console.WriteLine("║                          BENCHMARK COMPARISON                                  ║");
+        Console.WriteLine("║                          BENCHMARK COMPARISON                                    ║");
         Console.WriteLine("╚══════════════════════════════════════════════════════════════════════════════════╝");
         Console.ResetColor();
 
         Console.WriteLine();
         Console.WriteLine($"  Machine A: {nameA} ({reportA.MachineInfo.Os})");
         Console.WriteLine($"  Machine B: {nameB} ({reportB.MachineInfo.Os})");
+        Console.WriteLine($"  Timestamp A: {reportA.Timestamp:yyyy-MM-dd HH:mm:ss}");
+        Console.WriteLine($"  Timestamp B: {reportB.Timestamp:yyyy-MM-dd HH:mm:ss}");
         Console.WriteLine($"  Iterations: A={reportA.Iterations}, B={reportB.Iterations}");
         Console.WriteLine();
 
@@ -54,9 +56,16 @@ public static class ComparisonReporter
 
         var allKeys = mediansA.Keys.Union(mediansB.Keys).OrderBy(k => k).ToList();
 
-        Console.WriteLine(string.Format("  {0,-50} {1,6} {2,12} {3,12} {4,10} {5,10}",
-            "Task", "Type", nameA, nameB, "Diff %", "Winner"));
-        Console.WriteLine("  " + new string('-', 104));
+        var headerA = $"A: {nameA}";
+        var headerB = $"B: {nameB}";
+        var taskColWidth = Math.Max(4, allKeys.Count > 0 ? allKeys.Max(k => k.Length) : 4);
+        var nameAColWidth = Math.Max(headerA.Length, 12);
+        var nameBColWidth = Math.Max(headerB.Length, 12);
+        var separatorWidth = taskColWidth + 6 + nameAColWidth + nameBColWidth + 10 + 10 + 5;
+        var fmt = $"  {{0,-{taskColWidth}}} {{1,6}} {{2,{nameAColWidth}}} {{3,{nameBColWidth}}} {{4,10}} {{5,10}}";
+
+        Console.WriteLine(fmt, "Task", "Type", headerA, headerB, "Diff %", "Winner");
+        Console.WriteLine("  " + new string('-', separatorWidth));
 
         foreach (var key in allKeys)
         {
@@ -84,7 +93,7 @@ public static class ComparisonReporter
 
                 if (Math.Abs(pct) > threshold)
                 {
-                    winner = pct > 0 ? nameA : nameB;
+                    winner = pct > 0 ? headerA : headerB;
                     Console.ForegroundColor = pct > 0 ? ConsoleColor.Green : ConsoleColor.Red;
                 }
 
@@ -92,8 +101,7 @@ public static class ComparisonReporter
                     diff += "*";
             }
 
-            Console.WriteLine(string.Format("  {0,-50} {1,6} {2,12} {3,12} {4,10} {5,10}",
-                key, CategoryTag(category), colA, colB, diff, winner));
+            Console.WriteLine(fmt, key, CategoryTag(category), colA, colB, diff, winner);
             Console.ResetColor();
         }
 

@@ -38,16 +38,20 @@ public static class ConsoleReportWriter
             Console.ResetColor();
             Console.WriteLine();
 
-            Console.WriteLine(string.Format("  {0,-50} {1,6} {2,10} {3,10} {4,10} {5,10} {6,7}",
-                "Task", "Type", "Median", "StdDev", "Min", "Max", "CV%"));
-            Console.WriteLine("  " + new string('-', 106));
+            var taskColWidth = Math.Max(4, suite.Results.Count > 0 ? suite.Results.Max(r => r.TaskName.Length) : 4);
+            var separatorWidth = taskColWidth + 6 + 10 + 10 + 10 + 10 + 7 + 5;
+            var fmt = $"  {{0,-{taskColWidth}}} {{1,6}} {{2,10}} {{3,10}} {{4,10}} {{5,10}} {{6,7}}";
+            var fmtShort = $"  {{0,-{taskColWidth}}} {{1,6}} {{2,10}}";
+
+            Console.WriteLine(fmt, "Task", "Type", "Median", "StdDev", "Min", "Max", "CV%");
+            Console.WriteLine("  " + new string('-', separatorWidth));
 
             foreach (var result in suite.Results)
             {
                 if (!result.Success)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(string.Format("  {0,-50} {1,6} {2,10}", result.TaskName, CategoryTag(result.Category), "FAILED"));
+                    Console.WriteLine(fmtShort, result.TaskName, CategoryTag(result.Category), "FAILED");
                     Console.ResetColor();
                     continue;
                 }
@@ -55,7 +59,7 @@ public static class ConsoleReportWriter
                 if (result.Stats is null)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine(string.Format("  {0,-50} {1,6} {2,10}", result.TaskName, CategoryTag(result.Category), "SKIPPED"));
+                    Console.WriteLine(fmtShort, result.TaskName, CategoryTag(result.Category), "SKIPPED");
                     Console.ResetColor();
                     continue;
                 }
@@ -71,15 +75,7 @@ public static class ConsoleReportWriter
                 if (s.CvPercent is > 30)
                     Console.ForegroundColor = ConsoleColor.Yellow;
 
-                Console.WriteLine(string.Format("  {0,-50} {1,6} {2,10} {3,10} {4,10} {5,10} {6,7}{7}",
-                    result.TaskName,
-                    CategoryTag(result.Category),
-                    FormatMs(s.MedianMs),
-                    stddev,
-                    FormatMs(s.MinMs),
-                    FormatMs(s.MaxMs),
-                    cv,
-                    outlierFlag));
+                Console.WriteLine(fmt + "{7}", result.TaskName, CategoryTag(result.Category), FormatMs(s.MedianMs), stddev, FormatMs(s.MinMs), FormatMs(s.MaxMs), cv, outlierFlag);
 
                 Console.ResetColor();
 

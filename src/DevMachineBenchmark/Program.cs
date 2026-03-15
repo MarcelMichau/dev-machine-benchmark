@@ -79,7 +79,7 @@ if (fromJsonFile is not null)
 // Banner
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("╔══════════════════════════════════════════════════════════════════╗");
-Console.WriteLine("║              Dev Machine Benchmark Harness                      ║");
+Console.WriteLine("║              Dev Machine Benchmark Harness                       ║");
 Console.WriteLine("╚══════════════════════════════════════════════════════════════════╝");
 Console.ResetColor();
 Console.WriteLine($"  Iterations: {iterations} (+ {warmupIterations} warm-up)");
