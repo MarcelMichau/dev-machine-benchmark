@@ -7,4 +7,5 @@ public sealed record BenchmarkSuite(
 
 public sealed record SuiteResult(
     string SuiteName,
-    List<BenchmarkResult> Results);
+    List<BenchmarkResult> Results,
+    TimeSpan TotalElapsed = default);

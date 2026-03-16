@@ -89,6 +89,23 @@ public static class ConsoleReportWriter
                     Console.ResetColor();
                 }
             }
+
+            if (suite.TotalElapsed != default)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine($"  Suite total: {FormatElapsed(suite.TotalElapsed)}");
+                Console.ResetColor();
+            }
+        }
+
+        var grandTotal = report.Suites.Aggregate(TimeSpan.Zero, (acc, s) => acc + s.TotalElapsed);
+        if (grandTotal != TimeSpan.Zero)
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"  Total benchmark run time: {FormatElapsed(grandTotal)}");
+            Console.ResetColor();
         }
 
         if (report.Note is not null)
@@ -123,4 +140,11 @@ public static class ConsoleReportWriter
 
     private static string FormatMs(double ms) =>
         ms >= 1000 ? $"{ms / 1000:F1}s" : $"{ms:F0}ms";
+
+    private static string FormatElapsed(TimeSpan elapsed) =>
+        elapsed.TotalHours >= 1
+            ? $"{(int)elapsed.TotalHours}h {elapsed.Minutes}m {elapsed.Seconds}s"
+            : elapsed.TotalMinutes >= 1
+                ? $"{(int)elapsed.TotalMinutes}m {elapsed.Seconds}s"
+                : $"{elapsed.TotalSeconds:F1}s";
 }

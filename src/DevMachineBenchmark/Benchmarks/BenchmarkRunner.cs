@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DevMachineBenchmark.Statistics;
 
@@ -12,6 +13,7 @@ public sealed class BenchmarkRunner(int iterations, int warmupIterations = 1, bo
         Console.WriteLine($"=== Suite: {suite.Name} ===");
         Console.ResetColor();
 
+        var sw = Stopwatch.StartNew();
         var results = new List<BenchmarkResult>();
 
         foreach (var task in suite.Tasks)
@@ -80,7 +82,7 @@ public sealed class BenchmarkRunner(int iterations, int warmupIterations = 1, bo
             results.Add(new BenchmarkResult(task.Name, durations, stats, success, task.Category));
         }
 
-        return new SuiteResult(suite.Name, results);
+        return new SuiteResult(suite.Name, results, sw.Elapsed);
     }
 
     /// <summary>
@@ -93,6 +95,8 @@ public sealed class BenchmarkRunner(int iterations, int warmupIterations = 1, bo
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine($"=== Suite: {suite.Name} ===");
         Console.ResetColor();
+
+        var sw = Stopwatch.StartNew();
 
         // We need to track per-task durations across iterations
         var taskDurations = new Dictionary<string, List<double>>();
@@ -199,7 +203,7 @@ public sealed class BenchmarkRunner(int iterations, int warmupIterations = 1, bo
             results.Add(new BenchmarkResult(task.Name, durations, stats, taskSuccess[task.Name], taskCategories[task.Name]));
         }
 
-        return new SuiteResult(suite.Name, results);
+        return new SuiteResult(suite.Name, results, sw.Elapsed);
     }
 
     public bool ShuffleSuites => shuffleSuites;
