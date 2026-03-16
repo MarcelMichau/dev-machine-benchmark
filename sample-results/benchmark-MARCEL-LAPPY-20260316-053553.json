@@ -1,0 +1,769 @@
+{
+  "machineInfo": {
+    "hostname": "MARCEL-LAPPY",
+    "os": "Microsoft Windows 10.0.26200",
+    "cpuModel": "Intel(R) Core(TM) Ultra 7 155H",
+    "cpuCores": 22,
+    "ramGB": 15.4,
+    "diskType": "SSD",
+    "dotnetSdk": "10.0.201",
+    "nodeVersion": "v25.8.1",
+    "dockerVersion": "Docker version 29.2.1, build a5c7197",
+    "cpuUsagePercent": 0,
+    "memoryUsagePercent": 66.7
+  },
+  "timestamp": "2026-03-16T05:35:53.8825598Z",
+  "iterations": 5,
+  "suites": [
+    {
+      "suiteName": "fake-survey-generator",
+      "results": [
+        {
+          "taskName": "git clone",
+          "durationsMs": [
+            3400.3264,
+            4422.5947,
+            4307.2108,
+            3755.2243,
+            3673.2051
+          ],
+          "stats": {
+            "meanMs": 3911.7122600000002,
+            "medianMs": 3755.2243,
+            "stdDevMs": 435.97867133801725,
+            "minMs": 3400.3264,
+            "maxMs": 4422.5947,
+            "cvPercent": 11.14546884739465,
+            "ciLowMs": 3370.4600244630556,
+            "ciHighMs": 4452.964495536945,
+            "iqrMs": 634.0056999999997,
+            "trimmedMeanMs": 3911.8800666666666,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "dotnet restore fake-survey-generator/FakeSurveyGenerator.slnx",
+          "durationsMs": [
+            1610.8626,
+            1581.2914,
+            1682.7806,
+            1681.9177,
+            1333.7853
+          ],
+          "stats": {
+            "meanMs": 1578.12752,
+            "medianMs": 1610.8626,
+            "stdDevMs": 143.6222342568413,
+            "minMs": 1333.7853,
+            "maxMs": 1682.7806,
+            "cvPercent": 9.100800311551586,
+            "ciLowMs": 1399.825551406548,
+            "ciHighMs": 1756.429488593452,
+            "iqrMs": 100.6262999999999,
+            "trimmedMeanMs": 1624.6905666666669,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "dotnet build fake-survey-generator/FakeSurveyGenerator.slnx",
+          "durationsMs": [
+            6206.8358,
+            6750.2808,
+            6396.3862,
+            7665.1238,
+            5529.1493
+          ],
+          "stats": {
+            "meanMs": 6509.555180000001,
+            "medianMs": 6396.3862,
+            "stdDevMs": 784.0487214219357,
+            "minMs": 5529.1493,
+            "maxMs": 7665.1238,
+            "cvPercent": 12.04458215256938,
+            "ciLowMs": 5536.186180234206,
+            "ciHighMs": 7482.924179765796,
+            "iqrMs": 543.4450000000006,
+            "trimmedMeanMs": 6451.167600000001,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 1
+        },
+        {
+          "taskName": "dotnet clean \u002B build fake-survey-generator/FakeSurveyGenerator.slnx",
+          "durationsMs": [
+            8036.1929,
+            7811.6728,
+            7657.5455,
+            8561.7313,
+            7495.292
+          ],
+          "stats": {
+            "meanMs": 7912.486900000001,
+            "medianMs": 7811.6728,
+            "stdDevMs": 414.135138012382,
+            "minMs": 7495.292,
+            "maxMs": 8561.7313,
+            "cvPercent": 5.233944058882195,
+            "ciLowMs": 7398.352645276754,
+            "ciHighMs": 8426.621154723247,
+            "iqrMs": 378.64739999999983,
+            "trimmedMeanMs": 7835.137066666667,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 1
+        },
+        {
+          "taskName": "dotnet test (unit): FakeSurveyGenerator.Application.Tests",
+          "durationsMs": [
+            5964.3881,
+            5801.1905,
+            6048.9902,
+            6478.8597,
+            5650.0732
+          ],
+          "stats": {
+            "meanMs": 5988.70034,
+            "medianMs": 5964.3881,
+            "stdDevMs": 313.97071140062263,
+            "minMs": 5650.0732,
+            "maxMs": 6478.8597,
+            "cvPercent": 5.242718679769885,
+            "ciLowMs": 5598.916709261426,
+            "ciHighMs": 6378.4839707385745,
+            "iqrMs": 247.79970000000048,
+            "trimmedMeanMs": 5938.189600000001,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 3
+        },
+        {
+          "taskName": "dotnet test (integration): FakeSurveyGenerator.Api.Tests.Integration",
+          "durationsMs": [
+            19889.1303,
+            19183.9781,
+            18994.9409,
+            18955.5854,
+            18262.6551
+          ],
+          "stats": {
+            "meanMs": 19057.25796,
+            "medianMs": 18994.9409,
+            "stdDevMs": 581.7396355937235,
+            "minMs": 18262.6551,
+            "maxMs": 19889.1303,
+            "cvPercent": 3.0525883462078274,
+            "ciLowMs": 18335.048597557514,
+            "ciHighMs": 19779.467322442484,
+            "iqrMs": 228.39270000000033,
+            "trimmedMeanMs": 19044.8348,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 3
+        },
+        {
+          "taskName": "dotnet test (acceptance): FakeSurveyGenerator.Acceptance.Tests",
+          "durationsMs": [
+            71579.7073,
+            72491.0062,
+            71218.1354,
+            78169.112,
+            75797.259
+          ],
+          "stats": {
+            "meanMs": 73851.04398,
+            "medianMs": 72491.0062,
+            "stdDevMs": 3015.5573695835515,
+            "minMs": 71218.1354,
+            "maxMs": 78169.112,
+            "cvPercent": 4.083296873095269,
+            "ciLowMs": 70107.33522776251,
+            "ciHighMs": 77594.7527322375,
+            "iqrMs": 4217.551700000011,
+            "trimmedMeanMs": 73289.32416666667,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 3
+        },
+        {
+          "taskName": "npm ci (fake-survey-generator\\src/client/ui)",
+          "durationsMs": [
+            5666.5641,
+            6097.0678,
+            5249.8454,
+            6132.2167,
+            5642.2744
+          ],
+          "stats": {
+            "meanMs": 5757.59368,
+            "medianMs": 5666.5641,
+            "stdDevMs": 365.71106145471856,
+            "minMs": 5249.8454,
+            "maxMs": 6132.2167,
+            "cvPercent": 6.351803926787667,
+            "ciLowMs": 5303.5762186286165,
+            "ciHighMs": 6211.611141371383,
+            "iqrMs": 454.79339999999956,
+            "trimmedMeanMs": 5801.968766666666,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "npm run build (fake-survey-generator\\src/client/ui)",
+          "durationsMs": [
+            2260.4601,
+            2303.1395,
+            2336.9324,
+            2670.9924,
+            2275.2719
+          ],
+          "stats": {
+            "meanMs": 2369.3592599999997,
+            "medianMs": 2303.1395,
+            "stdDevMs": 171.12171645546047,
+            "minMs": 2260.4601,
+            "maxMs": 2670.9924,
+            "cvPercent": 7.222278163736997,
+            "ciLowMs": 2156.9176483583415,
+            "ciHighMs": 2581.800871641658,
+            "iqrMs": 61.660499999999956,
+            "trimmedMeanMs": 2305.1146000000003,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 1
+        },
+        {
+          "taskName": "npx vitest run (fake-survey-generator\\src/client/ui)",
+          "durationsMs": [
+            6527.2501,
+            5862.549,
+            5902.1374,
+            6174.9169,
+            5617.5234
+          ],
+          "stats": {
+            "meanMs": 6016.87536,
+            "medianMs": 5902.1374,
+            "stdDevMs": 347.10334066646936,
+            "minMs": 5617.5234,
+            "maxMs": 6527.2501,
+            "cvPercent": 5.768830495875011,
+            "ciLowMs": 5585.958731621152,
+            "ciHighMs": 6447.791988378848,
+            "iqrMs": 312.3679000000002,
+            "trimmedMeanMs": 5979.867766666666,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 1
+        },
+        {
+          "taskName": "git add \u002B commit (with changes)",
+          "durationsMs": [
+            182.3298,
+            193.6912,
+            127.3663,
+            128.3629,
+            127.282
+          ],
+          "stats": {
+            "meanMs": 151.80644,
+            "medianMs": 128.3629,
+            "stdDevMs": 33.29555824059721,
+            "minMs": 127.282,
+            "maxMs": 193.6912,
+            "cvPercent": 21.932902346301784,
+            "ciLowMs": 110.4711717496829,
+            "ciHighMs": 193.14170825031712,
+            "iqrMs": 54.96350000000001,
+            "trimmedMeanMs": 146.01966666666667,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 2
+        }
+      ]
+    },
+    {
+      "suiteName": "dotnet-starter-project-template",
+      "results": [
+        {
+          "taskName": "git clone",
+          "durationsMs": [
+            933.9721,
+            1033.9357,
+            1232.8485,
+            1193.7193,
+            1517.5192
+          ],
+          "stats": {
+            "meanMs": 1182.39896,
+            "medianMs": 1193.7193,
+            "stdDevMs": 222.8991508400559,
+            "minMs": 933.9721,
+            "maxMs": 1517.5192,
+            "cvPercent": 18.85143326242911,
+            "ciLowMs": 905.6774788293528,
+            "ciHighMs": 1459.1204411706472,
+            "iqrMs": 198.91280000000006,
+            "trimmedMeanMs": 1153.5011666666667,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "dotnet restore dotnet-starter-project-template/DotNetStarterProjectTemplate.slnx",
+          "durationsMs": [
+            1215.1754,
+            1232.2266,
+            1199.9535,
+            1187.8269,
+            1206.4414
+          ],
+          "stats": {
+            "meanMs": 1208.32476,
+            "medianMs": 1206.4414,
+            "stdDevMs": 16.673455904910636,
+            "minMs": 1187.8269,
+            "maxMs": 1232.2266,
+            "cvPercent": 1.379882003320915,
+            "ciLowMs": 1187.625249046945,
+            "ciHighMs": 1229.0242709530548,
+            "iqrMs": 15.221900000000005,
+            "trimmedMeanMs": 1207.1901,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "dotnet build dotnet-starter-project-template/DotNetStarterProjectTemplate.slnx",
+          "durationsMs": [
+            2974.9272,
+            3072.3282,
+            3077.6146,
+            2864.3002,
+            2949.9128
+          ],
+          "stats": {
+            "meanMs": 2987.8165999999997,
+            "medianMs": 2974.9272,
+            "stdDevMs": 89.533551105605,
+            "minMs": 2864.3002,
+            "maxMs": 3077.6146,
+            "cvPercent": 2.9966213825040335,
+            "ciLowMs": 2876.6638352495,
+            "ciHighMs": 3098.969364750499,
+            "iqrMs": 122.41539999999986,
+            "trimmedMeanMs": 2999.0560666666665,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 1
+        },
+        {
+          "taskName": "dotnet clean \u002B build dotnet-starter-project-template/DotNetStarterProjectTemplate.slnx",
+          "durationsMs": [
+            3691.5366,
+            3581.657,
+            3646.4585,
+            3660.2368,
+            3579.4882
+          ],
+          "stats": {
+            "meanMs": 3631.8754200000003,
+            "medianMs": 3646.4585,
+            "stdDevMs": 49.60544582857816,
+            "minMs": 3579.4882,
+            "maxMs": 3691.5366,
+            "cvPercent": 1.3658355557960784,
+            "ciLowMs": 3570.2919981157943,
+            "ciHighMs": 3693.4588418842063,
+            "iqrMs": 78.57979999999998,
+            "trimmedMeanMs": 3629.450766666667,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 1
+        },
+        {
+          "taskName": "dotnet test (aspire): DotNetStarterProjectTemplate.AppHost.Tests",
+          "durationsMs": [
+            42436.3102,
+            45160.1843,
+            43132.3683,
+            43995.9317,
+            45172.8357
+          ],
+          "stats": {
+            "meanMs": 43979.526040000004,
+            "medianMs": 43995.9317,
+            "stdDevMs": 1216.2855732212315,
+            "minMs": 42436.3102,
+            "maxMs": 45172.8357,
+            "cvPercent": 2.7655722622272063,
+            "ciLowMs": 42469.55014247054,
+            "ciHighMs": 45489.501937529465,
+            "iqrMs": 2027.815999999999,
+            "trimmedMeanMs": 44096.161433333335,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 3
+        },
+        {
+          "taskName": "git add \u002B commit (with changes)",
+          "durationsMs": [
+            103.0205,
+            104.4931,
+            108.8349,
+            102.2441,
+            97.0453
+          ],
+          "stats": {
+            "meanMs": 103.12758,
+            "medianMs": 103.0205,
+            "stdDevMs": 4.2492434470150116,
+            "minMs": 97.0453,
+            "maxMs": 108.8349,
+            "cvPercent": 4.120375409774002,
+            "ciLowMs": 97.85229323429844,
+            "ciHighMs": 108.40286676570155,
+            "iqrMs": 2.2489999999999952,
+            "trimmedMeanMs": 103.25256666666667,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 2
+        }
+      ]
+    },
+    {
+      "suiteName": "home-page",
+      "results": [
+        {
+          "taskName": "git clone",
+          "durationsMs": [
+            1215.353,
+            1082.9103,
+            1328.7171,
+            972.8443,
+            1536.1024
+          ],
+          "stats": {
+            "meanMs": 1227.18542,
+            "medianMs": 1215.353,
+            "stdDevMs": 218.7367734932035,
+            "minMs": 972.8443,
+            "maxMs": 1536.1024,
+            "cvPercent": 17.824264363669144,
+            "ciLowMs": 955.6313843771318,
+            "ciHighMs": 1498.7394556228683,
+            "iqrMs": 245.80680000000007,
+            "trimmedMeanMs": 1208.9934666666668,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "pnpm install (home-page)",
+          "durationsMs": [
+            1291.1229,
+            1494.7318,
+            1214.4542,
+            1684.7756,
+            1169.5412
+          ],
+          "stats": {
+            "meanMs": 1370.9251399999998,
+            "medianMs": 1291.1229,
+            "stdDevMs": 215.19598286561487,
+            "minMs": 1169.5412,
+            "maxMs": 1684.7756,
+            "cvPercent": 15.697135940304873,
+            "ciLowMs": 1103.7668718050863,
+            "ciHighMs": 1638.0834081949133,
+            "iqrMs": 280.2776000000001,
+            "trimmedMeanMs": 1333.4363,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "pnpm run build (home-page)",
+          "durationsMs": [
+            800.4268,
+            822.361,
+            797.1069,
+            923.2339,
+            724.2942
+          ],
+          "stats": {
+            "meanMs": 813.4845600000001,
+            "medianMs": 800.4268,
+            "stdDevMs": 71.6194142284967,
+            "minMs": 724.2942,
+            "maxMs": 923.2339,
+            "cvPercent": 8.804028711804522,
+            "ciLowMs": 724.5715681326384,
+            "ciHighMs": 902.3975518673618,
+            "iqrMs": 25.254099999999994,
+            "trimmedMeanMs": 806.6315666666666,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 1
+        },
+        {
+          "taskName": "playwright install (home-page)",
+          "durationsMs": [
+            876.2638,
+            877.3438,
+            873.753,
+            901.1332,
+            890.8326
+          ],
+          "stats": {
+            "meanMs": 883.86528,
+            "medianMs": 877.3438,
+            "stdDevMs": 11.71852182965069,
+            "minMs": 873.753,
+            "maxMs": 901.1332,
+            "cvPercent": 1.3258266949518247,
+            "ciLowMs": 869.3171459868812,
+            "ciHighMs": 898.4134140131188,
+            "iqrMs": 14.56880000000001,
+            "trimmedMeanMs": 881.4800666666666,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "playwright test (home-page)",
+          "durationsMs": [
+            24013.4253,
+            24435.3372,
+            24346.7612,
+            24037.4351,
+            23980.1088
+          ],
+          "stats": {
+            "meanMs": 24162.61352,
+            "medianMs": 24037.4351,
+            "stdDevMs": 211.8509548744525,
+            "minMs": 23980.1088,
+            "maxMs": 24435.3372,
+            "cvPercent": 0.8767716898633426,
+            "ciLowMs": 23899.60798678314,
+            "ciHighMs": 24425.61905321686,
+            "iqrMs": 333.33590000000186,
+            "trimmedMeanMs": 24132.540533333333,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 3
+        },
+        {
+          "taskName": "git add \u002B commit (with changes)",
+          "durationsMs": [
+            103.2315,
+            97.3457,
+            124.8332,
+            113.5041,
+            99.6093
+          ],
+          "stats": {
+            "meanMs": 107.70476,
+            "medianMs": 103.2315,
+            "stdDevMs": 11.400355838656969,
+            "minMs": 97.3457,
+            "maxMs": 124.8332,
+            "cvPercent": 10.584820799616441,
+            "ciLowMs": 93.55161791015281,
+            "ciHighMs": 121.85790208984717,
+            "iqrMs": 13.89479999999999,
+            "trimmedMeanMs": 105.4483,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 2
+        }
+      ]
+    },
+    {
+      "suiteName": "Container Image Pulls",
+      "results": [
+        {
+          "taskName": "docker pull mcr.microsoft.com/dotnet/sdk:10.0",
+          "durationsMs": [
+            14224.791,
+            18015.2953,
+            14524.8399,
+            14242.6435,
+            16487.3248
+          ],
+          "stats": {
+            "meanMs": 15498.978899999998,
+            "medianMs": 14524.8399,
+            "stdDevMs": 1692.5983040931733,
+            "minMs": 14224.791,
+            "maxMs": 18015.2953,
+            "cvPercent": 10.92070848675827,
+            "ciLowMs": 13397.677446089663,
+            "ciHighMs": 17600.280353910333,
+            "iqrMs": 2244.6812999999984,
+            "trimmedMeanMs": 15084.936066666667,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "docker pull mcr.microsoft.com/dotnet/aspnet:10.0",
+          "durationsMs": [
+            1210.3024,
+            1096.7107,
+            1149.0222,
+            1148.1336,
+            1142.9714
+          ],
+          "stats": {
+            "meanMs": 1149.4280600000002,
+            "medianMs": 1148.1336,
+            "stdDevMs": 40.39905358789979,
+            "minMs": 1096.7107,
+            "maxMs": 1210.3024,
+            "cvPercent": 3.514709183965788,
+            "ciLowMs": 1099.2740513166839,
+            "ciHighMs": 1199.5820686833165,
+            "iqrMs": 6.0508000000002085,
+            "trimmedMeanMs": 1146.7090666666666,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "docker pull node:22-alpine",
+          "durationsMs": [
+            8304.1238,
+            8349.179,
+            8385.9303,
+            8608.6401,
+            8841.6488
+          ],
+          "stats": {
+            "meanMs": 8497.904400000001,
+            "medianMs": 8385.9303,
+            "stdDevMs": 225.07275068196336,
+            "minMs": 8304.1238,
+            "maxMs": 8841.6488,
+            "cvPercent": 2.648567694900914,
+            "ciLowMs": 8218.484470829628,
+            "ciHighMs": 8777.324329170375,
+            "iqrMs": 259.46110000000044,
+            "trimmedMeanMs": 8447.916466666667,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "docker pull postgres:17",
+          "durationsMs": [
+            15507.5799,
+            13596.3142,
+            13744.1146,
+            188223.6887,
+            15782.0085
+          ],
+          "stats": {
+            "meanMs": 49370.74118,
+            "medianMs": 15507.5799,
+            "stdDevMs": 77627.51418977322,
+            "minMs": 13596.3142,
+            "maxMs": 188223.6887,
+            "cvPercent": 157.23384404287614,
+            "ciLowMs": -47001.09615195819,
+            "ciHighMs": 145742.57851195819,
+            "iqrMs": 2037.8938999999991,
+            "trimmedMeanMs": 15011.234333333334,
+            "hasOutliers": true,
+            "outlierCount": 1
+          },
+          "success": true,
+          "category": 0
+        },
+        {
+          "taskName": "docker pull redis:7-alpine",
+          "durationsMs": [
+            6083.295,
+            6153.0532,
+            6275.0535,
+            6192.506,
+            6109.1702
+          ],
+          "stats": {
+            "meanMs": 6162.615580000001,
+            "medianMs": 6153.0532,
+            "stdDevMs": 75.45748012597565,
+            "minMs": 6083.295,
+            "maxMs": 6275.0535,
+            "cvPercent": 1.224439187329216,
+            "ciLowMs": 6068.937763879257,
+            "ciHighMs": 6256.293396120745,
+            "iqrMs": 83.33580000000075,
+            "trimmedMeanMs": 6151.576466666666,
+            "hasOutliers": false,
+            "outlierCount": 0
+          },
+          "success": true,
+          "category": 0
+        }
+      ]
+    }
+  ],
+  "note": "Clone and Docker pull times are network-dependent. Git commit times are heavily impacted by DLP/endpoint protection.",
+  "warmupIterations": 1
+}
