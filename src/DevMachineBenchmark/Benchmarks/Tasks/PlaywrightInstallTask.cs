@@ -2,7 +2,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 
 public sealed class PlaywrightInstallTask(string subDirectory, bool usePnpm = false) : IBenchmarkTask
 {
-    public string Name => $"playwright install ({subDirectory})";
+    public string Name => $"playwright install ({subDirectory.Replace('\\', '/')})";
     public TaskCategory Category => TaskCategory.Network;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)

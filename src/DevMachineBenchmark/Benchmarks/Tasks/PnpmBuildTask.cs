@@ -2,7 +2,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 
 public sealed class PnpmBuildTask(string subDirectory) : IBenchmarkTask
 {
-    public string Name => $"pnpm run build ({subDirectory})";
+    public string Name => $"pnpm run build ({subDirectory.Replace('\\', '/')})";
     public TaskCategory Category => TaskCategory.Cpu;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)

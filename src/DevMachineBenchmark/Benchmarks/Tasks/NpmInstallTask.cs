@@ -2,7 +2,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 
 public sealed class NpmInstallTask(string subDirectory) : IBenchmarkTask
 {
-    public string Name => $"npm ci ({subDirectory})";
+    public string Name => $"npm ci ({subDirectory.Replace('\\', '/')})";
     public TaskCategory Category => TaskCategory.Network;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)

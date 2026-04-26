@@ -2,7 +2,7 @@ namespace DevMachineBenchmark.Benchmarks.Tasks;
 
 public sealed class PnpmInstallTask(string subDirectory) : IBenchmarkTask
 {
-    public string Name => $"pnpm install ({subDirectory})";
+    public string Name => $"pnpm install ({subDirectory.Replace('\\', '/')})";
     public TaskCategory Category => TaskCategory.Network;
 
     public async Task<TaskResult> ExecuteAsync(string workingDirectory, CancellationToken ct)
